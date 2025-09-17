@@ -4,6 +4,8 @@ import numpy as np
 import cv2
 import tempfile
 import os
+import gdown
+import tensorflow as tf
 
 # Suppress TF warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -68,3 +70,13 @@ if uploaded_file is not None:
             st.error("⚠️ Likely FAKE")
         else:
             st.success("✅ Likely REAL")
+
+MODEL_PATH = "deepfake_xception.h5"
+# Replace with your real Google Drive file ID
+MODEL_URL = "https://drive.google.com/file/d/1PVjk3vWCUSxMHent3iUP6eN-UmqGKfKD/view?usp=drive_link" 
+
+if not os.path.exists(MODEL_PATH):
+    with st.spinner("Downloading model..."):
+        gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
+
+model = tf.keras.models.load_model(MODEL_PATH, compile=False)
