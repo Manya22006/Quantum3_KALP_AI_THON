@@ -5,7 +5,8 @@ import cv2
 import tempfile
 import os
 import gdown
-import tensorflow as tf
+import os
+import requests
 
 # Suppress TF warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -72,11 +73,22 @@ if uploaded_file is not None:
             st.success("✅ Likely REAL")
 
 MODEL_PATH = "deepfake_model.h5"
-# Replace with your real Google Drive file ID
-MODEL_URL = "https://drive.google.com/file/d/1PVjk3vWCUSxMHent3iUP6eN-UmqGKfKD/view?usp=drive_link" 
+FILE_ID = "YOUR_FILE_ID"  # paste your file ID here
+MODEL_URL = f"https://drive.google.com/uc?id={FILE_ID}"
+
+def download_model():
+    with st.spinner("Downloading model..."):
+        response = requests.get(MODEL_URL, stream=True)
+        if response.status_code == 200:
+            with open(MODEL_PATH, "wb") as f:
+                for chunk in response.iter_content(1024):
+                    f.write(chunk)
+        else:
+            st.error("❌ Failed to download model. Check Google Drive permissions!")
 
 if not os.path.exists(MODEL_PATH):
-    with st.spinner("Downloading model..."):
-        gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
+    download_model()
 
+# Load model after it's guaranteed to exist
 model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+
