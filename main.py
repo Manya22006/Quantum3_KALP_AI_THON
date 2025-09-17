@@ -71,24 +71,29 @@ if uploaded_file is not None:
             st.error("⚠️ Likely FAKE")
         else:
             st.success("✅ Likely REAL")
-
+# Model details
 MODEL_PATH = "deepfake_model.h5"
-FILE_ID = "YOUR_FILE_ID"  # paste your file ID here
-MODEL_URL = f"https://drive.google.com/uc?id={FILE_ID}"
+FILE_ID = "1PVjk3vWCUSxMHent3iUP6eN-UmqGKfKD"
+MODEL_URL = f"https://drive.google.com/uc?export=download&id={FILE_ID}"
 
 def download_model():
-    with st.spinner("Downloading model..."):
-        response = requests.get(MODEL_URL, stream=True)
-        if response.status_code == 200:
-            with open(MODEL_PATH, "wb") as f:
-                for chunk in response.iter_content(1024):
-                    f.write(chunk)
-        else:
-            st.error("❌ Failed to download model. Check Google Drive permissions!")
+    st.info("📥 Downloading model from Google Drive...")
+    response = requests.get(MODEL_URL, stream=True)
+    if response.status_code == 200:
+        with open(MODEL_PATH, "wb") as f:
+            for chunk in response.iter_content(1024):
+                f.write(chunk)
+        st.success("✅ Model downloaded successfully!")
+    else:
+        st.error(f"❌ Failed to download model (status {response.status_code}). Check sharing permissions.")
 
+# Download only if not already saved
 if not os.path.exists(MODEL_PATH):
     download_model()
 
-# Load model after it's guaranteed to exist
-model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-
+# Load model if available
+if os.path.exists(MODEL_PATH):
+    st.write("✅ Found model file, loading...")
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+else:
+    st.error("❌ Model file not found even after download.")
