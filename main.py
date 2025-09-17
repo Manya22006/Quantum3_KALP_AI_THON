@@ -11,7 +11,7 @@ import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Load trained model
-MODEL_PATH = "deepfake_xception.h5"
+MODEL_PATH = "deepfake_model.h5"
 model = tf.keras.models.load_model(MODEL_PATH, compile=False)  # compile=False avoids metrics warnings
 
 IMG_SIZE = (160, 160)
@@ -71,7 +71,7 @@ if uploaded_file is not None:
         else:
             st.success("✅ Likely REAL")
 
-MODEL_PATH = "deepfake_xception.h5"
+MODEL_PATH = "deepfake_model.h5"
 # Replace with your real Google Drive file ID
 MODEL_URL = "https://drive.google.com/file/d/1PVjk3vWCUSxMHent3iUP6eN-UmqGKfKD/view?usp=drive_link" 
 
